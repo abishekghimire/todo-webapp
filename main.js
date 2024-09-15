@@ -8,7 +8,24 @@ document.addEventListener("DOMContentLoaded", () => {
   const finishedTaskBtn = document.querySelector(
     ".bottom-buttons .bottom-btn:first-child"
   );
+  const clearBtn = document.querySelector(
+    ".bottom-buttons .bottom-btn:last-child"
+  );
+  const successMessage = document.querySelector(".success-message");
+  const titleHeading = document.querySelector(".todo-container h1");
   let viewingFinishedTasks = false; //State to track whether we're viewing finished task or not
+
+  //Function to display a success message
+  function showSuccessMessage(message, color) {
+    successMessage.textContent = message;
+    successMessage.style.display = "block";
+    successMessage.style.color = color;
+
+    //Hide the message after 2 seconds
+    setTimeout(() => {
+      successMessage.style.display = "none";
+    }, 2000);
+  }
 
   //Function to add a new task
   addBtn.addEventListener("click", () => {
@@ -17,6 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
       tasks.push(taskValue); //Add task to to-do list array
       createTaskRow(taskValue);
       taskInputField.value = ""; //Clear the input field
+      showSuccessMessage("Task added successfully!", "green");
     }
   });
 
@@ -50,17 +68,32 @@ document.addEventListener("DOMContentLoaded", () => {
       if (taskInput.disabled) {
         taskInput.disabled = false; //Enable editing
         taskInput.focus();
+        editBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
       } else {
         taskInput.disabled = true; //Save changes and disable editing
+        editBtn.innerHTML = '<i class="fa-solid fa-pencil"></i>';
+
+        //Update the task in the task array if it's in the to-do list
+        const taskIndex = tasks.indexOf(taskValue);
+        if (taskIndex > -1) {
+          tasks[taskIndex] = taskInput.value;
+          showSuccessMessage("Task updated successfully!", "green");
+        }
       }
     });
 
     //Delete task functionality
     delBtn.addEventListener("click", () => {
-      taskRow.remove();
-      const taskIndex = tasks.indexOf(taskValue);
-      if (taskIndex > -1) {
-        tasks.splice(taskIndex, 1); //Remove task from to-do list array
+      const confirmDelete = window.confirm(
+        "Are you sure you want to delete this task?"
+      );
+      if (confirmDelete) {
+        taskRow.remove();
+        const taskIndex = tasks.indexOf(taskValue);
+        if (taskIndex > -1) {
+          tasks.splice(taskIndex, 1); //Remove task from to-do list array
+          showSuccessMessage("Task deleted successfully!", "red");
+        }
       }
     });
 
@@ -73,6 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
           tasks.splice(taskIndex, 1); //Remove the task from the to-do array
         }
         taskRow.remove(); //Remove the task from the main list
+        showSuccessMessage("Moved to finished task!", "green");
       }
     });
   }
@@ -85,15 +119,16 @@ document.addEventListener("DOMContentLoaded", () => {
       //If we're viewing finished tasks, switch back to to-do list
       tasks.forEach((task) => createTaskRow(task)); //Show all tasks in the to-do list
       finishedTaskBtn.textContent = "Finished Task"; //Change the button to "Finished Task"
+      titleHeading.textContent = "To Do";
       viewingFinishedTasks = false; //Set the state to show to-do list
     } else {
       //If we are viewing to-do list, switch to finished tasks
       if (finishedTasksList.length === 0) {
         //If there are no finished tasks
-        const noTaskMessage = document.createElement("div");
-        noTaskMessage.classList.add("no-tasks-message");
-        noTaskMessage.textContent = "No finished tasks yet!";
-        taskList.appendChild(noTaskMessage);
+        const noTasksMessage = document.createElement("div");
+        noTasksMessage.classList.add("no-tasks-message");
+        noTasksMessage.textContent = "No finished tasks yet";
+        taskList.appendChild(noTasksMessage);
       } else {
         //Display finished tasks from the finishedTasksList array
         finishedTasksList.forEach((task) => {
@@ -109,16 +144,19 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
       finishedTaskBtn.textContent = "To Do"; //Change button trxt to "To Do"
+      titleHeading.textContent = "Finished Task";
       viewingFinishedTasks = true; //Set the state to show finished tasks
     }
   });
 
-  //Handle Clear All button
-  document
-    .querySelector(".bottom-buttons .bottom-btn:last-child")
-    .addEventListener("click", () => {
-      taskList.innerHTML = " "; //Clear the current task list
-      tasks.length = 0; //Clear the to do list
+  //Handle Clear button
+  clearBtn.addEventListener("click", () => {
+    taskList.innerHTML = " "; //Clear the current task list
+
+    if (viewingFinishedTasks) {
       finishedTasksList.length = 0; // Clear the finished task list
-    });
+    } else {
+      tasks.length = 0; //Clear the to do list
+    }
+  });
 });
