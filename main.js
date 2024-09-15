@@ -15,6 +15,30 @@ document.addEventListener("DOMContentLoaded", () => {
   const titleHeading = document.querySelector(".todo-container h1");
   let viewingFinishedTasks = false; //State to track whether we're viewing finished task or not
 
+  //Function to display messages when there is not task added
+  function displayNoTaskMessage() {
+    const noTasksMessage = document.createElement("div");
+    noTasksMessage.classList.add("no-tasks-message");
+    noTasksMessage.textContent = "Add tasks for your day!";
+    taskList.appendChild(noTasksMessage);
+  }
+
+  //Function to remove no task message
+  function removeNoTaskMessage() {
+    const noTasksMessage = document.querySelector(".no-tasks-message");
+    if (noTasksMessage) {
+      noTasksMessage.remove();
+    }
+  }
+
+  //Function to check if there are any tasks
+  function checkForEmptyTask() {
+    if (tasks.length === 0 && !viewingFinishedTasks) {
+      taskList.innerHTML = " ";
+      displayNoTaskMessage();
+    }
+  }
+
   //Function to display a success message
   function showSuccessMessage(message, color) {
     successMessage.textContent = message;
@@ -32,10 +56,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const taskValue = taskInputField.value.trim();
     if (taskValue) {
       tasks.push(taskValue); //Add task to to-do list array
+      removeNoTaskMessage();
       createTaskRow(taskValue);
       taskInputField.value = ""; //Clear the input field
       showSuccessMessage("Task added successfully!", "green");
     }
+    checkForEmptyTask(); //check for empty task after adding the task
   });
 
   //Function to create a new task row
@@ -94,6 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
           tasks.splice(taskIndex, 1); //Remove task from to-do list array
           showSuccessMessage("Task deleted successfully!", "red");
         }
+        checkForEmptyTask(); //Check for empty task after deletion
       }
     });
 
@@ -107,6 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         taskRow.remove(); //Remove the task from the main list
         showSuccessMessage("Moved to finished task!", "green");
+        checkForEmptyTask(); //Check for empty task after moving to finished
       }
     });
   }
@@ -158,5 +186,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       tasks.length = 0; //Clear the to do list
     }
+    checkForEmptyTask(); //check for empty task after clearing the list
   });
+  checkForEmptyTask(); //Check for empty task on page load
 });
