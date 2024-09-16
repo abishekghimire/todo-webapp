@@ -12,6 +12,7 @@ body {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 300px;
 }
 h1 {
   text-align: center;
@@ -89,5 +90,5 @@ input[type="text"] {
 }
 .finished-task .task-input {
   background-color: #f0f0f0;
-  border-radius: 8px;
+  border-radius: 8px 8px 8px 8px;
 }

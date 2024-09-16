@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
     //Hide the message after 2 seconds
     setTimeout(() => {
       successMessage.style.display = "none";
-    }, 2000);
+    }, 1000);
   }
 
   //Function to add a new task
@@ -139,6 +139,18 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  //Function to hide task input field
+  function hideTaskInputField() {
+    taskInputField.style.display = "none";
+    addBtn.style.display = "none";
+  }
+
+  //function to show task input field
+  function showTaskInputField() {
+    taskInputField.style.display = "block";
+    addBtn.style.display = "block";
+  }
+
   //Handle Finished Task button (shows finished tasks and toggle to-do list)
   finishedTaskBtn.addEventListener("click", () => {
     taskList.innerHTML = ""; //Clear the current task list
@@ -149,6 +161,8 @@ document.addEventListener("DOMContentLoaded", () => {
       finishedTaskBtn.textContent = "Finished Task"; //Change the button to "Finished Task"
       titleHeading.textContent = "To Do";
       viewingFinishedTasks = false; //Set the state to show to-do list
+      checkForEmptyTask(); //Check for empty task while going back to to-do list
+      showTaskInputField();
     } else {
       //If we are viewing to-do list, switch to finished tasks
       if (finishedTasksList.length === 0) {
@@ -174,18 +188,33 @@ document.addEventListener("DOMContentLoaded", () => {
       finishedTaskBtn.textContent = "To Do"; //Change button trxt to "To Do"
       titleHeading.textContent = "Finished Task";
       viewingFinishedTasks = true; //Set the state to show finished tasks
+      hideTaskInputField();
     }
+    removeHideTaskInput();
   });
 
   //Handle Clear button
   clearBtn.addEventListener("click", () => {
-    taskList.innerHTML = " "; //Clear the current task list
+    const confirmClear = window.confirm(
+      "Are you sure you want to clear all tasks?"
+    );
+    if (confirmClear) {
+      if (viewingFinishedTasks) {
+        finishedTasksList.length = 0; // Clear the finished task list
+        taskList.innerHTML = " "; //Clear the current task list
+        showSuccessMessage("Cleared all tasks!", "green");
 
-    if (viewingFinishedTasks) {
-      finishedTasksList.length = 0; // Clear the finished task list
-    } else {
-      tasks.length = 0; //Clear the to do list
+        const noTasksMessage = document.createElement("div");
+        noTasksMessage.classList.add("no-tasks-message");
+        noTasksMessage.textContent = "No finished tasks yet";
+        taskList.appendChild(noTasksMessage);
+      } else {
+        tasks.length = 0; //Clear the to do list
+        taskList.innerHTML = " "; //Clear the current task list
+        showSuccessMessage("Cleared all tasks!", "green");
+      }
     }
+
     checkForEmptyTask(); //check for empty task after clearing the list
   });
   checkForEmptyTask(); //Check for empty task on page load
