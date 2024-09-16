@@ -266,18 +266,18 @@ document.addEventListener("DOMContentLoaded", () => {
       if (viewingFinishedTasks) {
         finishedTasksList.length = 0;
         taskList.innerHTML = " "; //Clear the current task list
-        showToast("Cleared all tasks!", "green");
-
+        showToast("Cleared all to do tasks!", "red");
         noFinishedTaskMessage();
+        updateClearButton();
       } else {
         tasks.length = 0;
         taskList.innerHTML = ""; //Clear the current task list
-        showToast("Cleared all tasks!", "green");
+        showToast("Cleared all finished tasks!", "red");
+        updateClearButton();
       }
     }
 
     checkForEmptyTask(); //check for empty task after clearing the list
-    updateClearButton();
   });
   checkForEmptyTask(); //Check for empty task on page load
   updateClearButton();
