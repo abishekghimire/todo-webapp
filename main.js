@@ -266,13 +266,13 @@ document.addEventListener("DOMContentLoaded", () => {
       if (viewingFinishedTasks) {
         finishedTasksList.length = 0;
         taskList.innerHTML = " "; //Clear the current task list
-        showToast("Cleared all to do tasks!", "red");
+        showToast("Cleared all finished tasks!", "red");
         noFinishedTaskMessage();
         updateClearButton();
       } else {
         tasks.length = 0;
         taskList.innerHTML = ""; //Clear the current task list
-        showToast("Cleared all finished tasks!", "red");
+        showToast("Cleared all to do tasks!", "red");
         updateClearButton();
       }
     }
