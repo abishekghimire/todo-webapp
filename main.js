@@ -3,8 +3,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const addBtn = document.querySelector(".add-btn");
   const taskInputField = document.querySelector(".add-task input");
   const taskList = document.querySelector(".task-list");
-  const finishedTasksList = [];
-  const tasks = [];
+  const finishedTasksList =
+    JSON.parse(localStorage.getItem("finishedTasks")) || [];
+  const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
   const finishedTaskBtn = document.querySelector(
     ".bottom-buttons .bottom-btn:first-child"
   );
@@ -15,6 +16,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const titleHeading = document.querySelector(".todo-container h1");
   let viewingFinishedTasks = false; //State to track whether we're viewing finished task or not
 
+  //Function to save tasks to local storage
+  function saveTaskToLocalStorage() {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+    localStorage.setItem("finishedTasks", JSON.stringify(finishedTasksList));
+  }
+
+  //Loading task from local storage and displaying them
+  function loadTasks() {
+    tasks.forEach((task) => createTaskRow(task));
+    checkForEmptyTask();
+    updateClearButton();
+  }
   //Function to display messages when there is not task added
   function displayNoTaskMessage() {
     const noTasksMessage = document.createElement("div");
@@ -39,17 +52,24 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  //Function to display a success message
-  // function showSuccessMessage(message, color) {
-  //   successMessage.textContent = message;
-  //   successMessage.style.display = "block";
-  //   successMessage.style.color = color;
+  //Function to display no finished task
+  function noFinishedTaskMessage() {
+    const noTasksMessage = document.createElement("div");
+    noTasksMessage.classList.add("no-tasks-message");
+    noTasksMessage.textContent = "No finished tasks yet";
+    taskList.appendChild(noTasksMessage);
+  }
 
-  //   //Hide the message after 2 seconds
-  //   setTimeout(() => {
-  //     successMessage.style.display = "none";
-  //   }, 1000);
-  // }
+  //Function to update clear all button state
+  function updateClearButton() {
+    if (viewingFinishedTasks) {
+      clearBtn.disabled = finishedTasksList.length === 0;
+    } else {
+      clearBtn.disabled = tasks.length === 0;
+    }
+  }
+
+  //Function to display a success message
   function showToast(message, backgroundColor) {
     Toastify({
       text: message,
@@ -71,6 +91,8 @@ document.addEventListener("DOMContentLoaded", () => {
       createTaskRow(taskValue);
       taskInputField.value = ""; //Clear the input field
       showToast("Task added successfully!", "green");
+      updateClearButton();
+      saveTaskToLocalStorage();
     }
     checkForEmptyTask(); //check for empty task after adding the task
   });
@@ -115,6 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (taskIndex > -1) {
           tasks[taskIndex] = taskInput.value;
           showToast("Task updated successfully!", "green");
+          saveTaskToLocalStorage();
         }
       }
     });
@@ -130,8 +153,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (taskIndex > -1) {
           tasks.splice(taskIndex, 1); //Remove task from to-do list array
           showToast("Task deleted successfully!", "red");
+          saveTaskToLocalStorage();
         }
         checkForEmptyTask(); //Check for empty task after deletion
+        updateClearButton();
       }
     });
 
@@ -144,8 +169,10 @@ document.addEventListener("DOMContentLoaded", () => {
           tasks.splice(taskIndex, 1); //Remove the task from the to-do array
         }
         taskRow.remove(); //Remove the task from the main list
-        showToast("Moved to finished task!", "green");
+        showToast("Task moved to 'Finished Task' list!", "green");
         checkForEmptyTask(); //Check for empty task after moving to finished
+        updateClearButton();
+        saveTaskToLocalStorage();
       }
     });
   }
@@ -174,34 +201,60 @@ document.addEventListener("DOMContentLoaded", () => {
       viewingFinishedTasks = false; //Set the state to show to-do list
       checkForEmptyTask(); //Check for empty task while going back to to-do list
       showTaskInputField();
+      updateClearButton();
     } else {
       //If we are viewing to-do list, switch to finished tasks
       if (finishedTasksList.length === 0) {
         //If there are no finished tasks
-        const noTasksMessage = document.createElement("div");
-        noTasksMessage.classList.add("no-tasks-message");
-        noTasksMessage.textContent = "No finished tasks yet";
-        taskList.appendChild(noTasksMessage);
+        noFinishedTaskMessage();
       } else {
         //Display finished tasks from the finishedTasksList array
         finishedTasksList.forEach((task) => {
           const taskRow = document.createElement("div");
-          taskRow.classList.add(".task-row");
+          taskRow.classList.add("task-row");
 
           taskRow.innerHTML = `
-        <input type="checkbox" class="task-checkbox" checked disabled />
+        <input type="checkbox" class="task-checkbox" checked  />
                   <input type="text" class="task-input" value="${task}" disabled />
         `;
 
           taskList.appendChild(taskRow);
+
+          const checkbox = taskRow.querySelector(".task-checkbox");
+
+          //Handling unchecking a finished task
+          checkbox.addEventListener("click", () => {
+            if (!checkbox.checked) {
+              //Removing from finished tasks
+              const taskIndex = finishedTasksList.indexOf(task);
+              if (taskIndex > -1) {
+                finishedTasksList.splice(taskIndex, 1);
+              }
+              //Moving task back to to-do list
+              tasks.push(task);
+              taskRow.remove();
+
+              if (finishedTasksList.length === 0) {
+                noFinishedTaskMessage();
+              }
+              updateClearButton();
+              //Re-creating the task in to-do list
+              if (!viewingFinishedTasks) {
+                createTaskRow(task);
+              }
+              showToast("Task moved back to 'To Do' list!", "green");
+              saveTaskToLocalStorage();
+            }
+          });
         });
       }
       finishedTaskBtn.textContent = "To Do";
       titleHeading.textContent = "Finished Task";
       viewingFinishedTasks = true; //Set the state to show finished tasks
       hideTaskInputField();
+      updateClearButton();
     }
-    removeHideTaskInput();
+    // removeHideTaskInput();
   });
 
   //Handle Clear button
@@ -215,10 +268,7 @@ document.addEventListener("DOMContentLoaded", () => {
         taskList.innerHTML = " "; //Clear the current task list
         showToast("Cleared all tasks!", "green");
 
-        const noTasksMessage = document.createElement("div");
-        noTasksMessage.classList.add("no-tasks-message");
-        noTasksMessage.textContent = "No finished tasks yet";
-        taskList.appendChild(noTasksMessage);
+        noFinishedTaskMessage();
       } else {
         tasks.length = 0;
         taskList.innerHTML = ""; //Clear the current task list
@@ -229,4 +279,6 @@ document.addEventListener("DOMContentLoaded", () => {
     checkForEmptyTask(); //check for empty task after clearing the list
   });
   checkForEmptyTask(); //Check for empty task on page load
+  updateClearButton();
+  loadTasks();
 });

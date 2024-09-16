@@ -37,6 +37,11 @@ input[type="text"] {
   margin-left: 5px;
   cursor: pointer;
 }
+button:disabled {
+  background: #c0c0c0;
+  color: #ffff;
+  cursor: not-allowed;
+}
 .task-row {
   display: flex;
   align-items: center;
@@ -85,10 +90,8 @@ input[type="text"] {
   border-radius: 8px 8px 8px 8px;
   cursor: pointer;
 }
-.finished-task {
-  margin-top: 30px;
-}
-.finished-task .task-input {
-  background-color: #f0f0f0;
-  border-radius: 8px 8px 8px 8px;
+
+.finished-task-input {
+  border-radius: 8px;
+  border: 1px solid #ccc;
 }
