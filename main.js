@@ -277,6 +277,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     checkForEmptyTask(); //check for empty task after clearing the list
+    updateClearButton();
   });
   checkForEmptyTask(); //Check for empty task on page load
   updateClearButton();
