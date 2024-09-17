@@ -7,6 +7,7 @@ body {
   margin: 0;
   background-color: #f0f0f0;
 }
+
 .todo-container {
   background-color: white;
   padding: 20px;
@@ -14,20 +15,33 @@ body {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   width: 300px;
 }
+
 h1 {
   text-align: center;
   color: #004aad;
 }
+
 .add-task {
   display: flex;
   margin-bottom: 20px;
 }
+
 input[type="text"] {
   flex-grow: 1;
   padding: 10px;
   border: 1px solid #ccc;
+  /* border-radius: 8px ; */
+}
+
+.taskAddGarneInput {
   border-radius: 8px 0 0 8px;
 }
+
+.taskHerneInput {
+  border-radius: 8px;
+  border: 2px solid red;
+}
+
 .add-btn {
   padding: 10px 23px;
   background-color: #004aad;
@@ -37,28 +51,34 @@ input[type="text"] {
   margin-left: 5px;
   cursor: pointer;
 }
+
 button:disabled {
   background: #c0c0c0;
   color: #ffff;
   cursor: not-allowed;
 }
+
 .task-row {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
 }
+
 .task-checkbox {
   margin-right: 10px;
 }
-.task-input {
+
+.taskHerneInput {
   flex-grow: 1;
   padding: 10px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 8px;
 }
+
 .task-actions {
   display: flex;
 }
+
 .task-edit-btn {
   padding: 10px;
   background-color: #004aad;
@@ -68,6 +88,7 @@ button:disabled {
   margin-left: 5px;
   cursor: pointer;
 }
+
 .task-del-btn {
   padding: 10px;
   background-color: #004aad;
@@ -77,11 +98,13 @@ button:disabled {
   margin-left: 5px;
   cursor: pointer;
 }
+
 .bottom-buttons {
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
 }
+
 .bottom-btn {
   padding: 10px 20px;
   background-color: #004aad;

@@ -12,6 +12,7 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    <!-- Toastify CSS -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
@@ -21,7 +22,7 @@
     <div class="todo-container">
       <h1>To Do</h1>
       <div class="add-task">
-        <input type="text" placeholder="Add a task..." />
+        <input class="taskAddGarneInput" type="text" placeholder="Add a task..." />
         <button class="add-btn">Add</button>
       </div>
       <div class="task-list">
@@ -31,13 +32,10 @@
         <button class="bottom-btn">Finished Task</button>
         <button class="bottom-btn">Clear All</button>
       </div>
-
-      <div
-        class="success-message"
-        style="display: none; text-align: center; padding-top: 4px"
-      ></div>
     </div>
-    <script src="main.js"></script>
+
+    <!-- Toastify JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="main.js"></script>
   </body>
 </html>
